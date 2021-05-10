@@ -1,32 +1,35 @@
 const express = require('express');
-const passport = require('passport');
-const GoogleStrategy = require('passport-google-oauth20').Strategy;
-const keys = require('./config/keys.js')
-
 const app = express();
+const mongoose = require('mongoose');
+const keys = require('./config/keys.js');
+const cookieSession = require('cookie-session');
+const passport = require('passport');
+require('./models/Users');
+require('./services/passport');
 
-//https://console.cloud.google.com/
-
-passport.use(
-    new GoogleStrategy({
-        clientID: keys.googleClientID,
-        clientSecret: keys.googleClientSecret,
-        callbackURL: '/auth/google/callback'
-        },
-  (accessToken) => {
-            console.log(accessToken);
-        }
-    )
-);
-
-app.get('/auth/google',
-    passport.authenticate('google',{
-    scope: ['profile', 'email']
+app.use(
+    cookieSession({
+        maxAge: 30 * 24 * 60 * 60 * 1000,
+        keys: [keys.cookieKey]
     })
 )
 
+app.use(passport.initialize());
+app.use(passport.session());
 
-app.get('/auth/google/callback', passport.authenticate('google'));
+
+require('./routes/authRoutes.js')(app);
+
+// DB  CONNECTION
+mongoose.connect(keys.mongoURI, {useNewUrlParser: true,  useCreateIndex: true, useUnifiedTopology: true}, console.log('keys.mongo', keys.mongoURI))
+
+// CHECK DB CONNECTION
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', function() {
+//   console.log('connected')
+});
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT);
