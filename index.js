@@ -2,8 +2,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cookieSession = require('cookie-session');
 const passport = require('passport');
-const keys = require('./config/keys.js');
-require('./models/Users');
+const keys = require('./config/dev.js');
+require('./models/User');
 require('./services/passport');
 
 // DB  CONNECTION
@@ -13,7 +13,7 @@ mongoose.connect(keys.mongoURI, {useNewUrlParser: true,  useCreateIndex: true, u
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-//   console.log('connected')
+  console.log('connected')
 });
 
 const app = express();
@@ -24,7 +24,7 @@ app.use(
         keys: [keys.cookieKey]
     })
 );
-    console.log('keys', keys.cookieKey)
+    // console.log('keys', keys.cookieKey);\
 
 app.use(passport.initialize());
 app.use(passport.session());

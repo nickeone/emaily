@@ -1,33 +1,47 @@
 
-const passport = require('passport')
+const passport = require('passport');
 
+
+// GOOGLE AUTHENTICATION
 module.exports = (app) => {
     app.get('/auth/google',
         passport.authenticate('google',{
             scope: ['profile', 'email']
         })
     )
-    // console.log('google', passport.authenticate('google'));
 
     app.get('/auth/google/callback', 
-        passport.authenticate('google')
-        // , { failureRedirect: '/login' }),
-        // function(req, res) {
-        //     // Successful authentication, redirect home.
-        //     res.redirect('/');
-        // }
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function(req, res) {
+      // Successful authentication, redirect home.
+      res.redirect('/');
+    });
+  
+    
+
+    //FACEBOOK AUTHENTICATION
+    app.get('/auth/facebook',
+        // passport.authenticate('facebook'));
+        passport.authenticate('facebook', { authType: 'reauthenticate', scope: ['user_friends'] }));
+    app.get('/auth/facebook/callback',
+        passport.authenticate('facebook', { failureRedirect: '/login' }),
+        function(req, res) {
+      // Successful authentication, redirect home.
+            res.redirect('/api/current_user');
+        }
     );
 
+    //LOGOUT 
     app.get('/api/logout', (req, res) => {
         req.logout();
         res.send(req.user);
-        // console.log('req', req)
+        conlsole.log('logout')
     })
 
+    //GET CURRENT USER
     app.get('/api/current_user', (req, res) => {
         res.send(req.user);
-        // res.send(req.session);
-        // console.log('req', req.session);
+        console.log('req-nicu', req);
         // console.log('res', res);
     })
 };
