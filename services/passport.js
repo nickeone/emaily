@@ -10,13 +10,13 @@ const User = mongoose.model('users');
 
 
 passport.serializeUser((user, done) => {
-    console.log('serializeUser',{user});
+    // console.log('serializeUser',{user});
     done(null, user.id);
     // console.log('user.id:', user)
 })
 
 passport.deserializeUser((id, done) => {
-    console.log('deserializeUser', {id: id});
+    // console.log('deserializeUser', {id: id});
     User.findById(id)
         .then(user => {
             done(null, user);
@@ -29,15 +29,13 @@ passport.use(
             clientID: keys.googleClientID,
             clientSecret: keys.googleClientSecret,
             callbackURL: '/auth/google/callback', 
-            // enableProof: true
+            proxy: true
         },
         (accessToken, refreshToken, profile, done) => {
             console.log('profile:', profile);
 
             User.findOne({ googleId: profile.id}).then(existingUser =>{      
                 if(existingUser){
-                    // console.log('err', err);
-                    // console.log('existingUser', existingUser);
                     console.log("Auth done");
                     done (null, existingUser);
                     console.log('existingUser',existingUser);
@@ -61,7 +59,8 @@ console.log('keys.facebookID:', keys.facebookSecret);
 passport.use(new FacebookStrategy({
     clientID: keys.facebookID,
     clientSecret: keys.facebookSecret,
-    callbackURL: "/auth/facebook/callback"
+    callbackURL: "/auth/facebook/callback",
+    proxy: true
   },
     (accessToken, refreshToken, profile, done) => {
         console.log('profileFB:', profile);
@@ -69,7 +68,7 @@ passport.use(new FacebookStrategy({
 
         User.findOne({ facebookId: profile.id}).then(existingUser =>{
             if(existingUser){
-                console.log('existingUser-nicu', existingUser);
+                // console.log('existingUser-nicu', existingUser);
                 done (null, existingUser);
             }else{
                 console.log('insert user', {facebookId: profile.id});
