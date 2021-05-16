@@ -7,7 +7,7 @@ if(process.env.NODE_ENV === 'production'){
 module.exports = require('./prod');
 }else {
 // we are in development - retun the dev keys
-console.log('else:');
+console.log('config/keys.js/else:');
 module.exports = require('./dev');
 }
 

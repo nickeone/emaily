@@ -10,13 +10,12 @@ const User = mongoose.model('users');
 
 
 passport.serializeUser((user, done) => {
-    // console.log('serializeUser',{user});
+    console.log('serializeUser',{user});
     done(null, user.id);
-    // console.log('user.id:', user)
 })
 
 passport.deserializeUser((id, done) => {
-    // console.log('deserializeUser', {id: id});
+    console.log('deserializeUser', {id: id});
     User.findById(id)
         .then(user => {
             done(null, user);
@@ -32,26 +31,25 @@ passport.use(
             proxy: true
         },
         (accessToken, refreshToken, profile, done) => {
-            console.log('profile:', profile);
+            // console.log('GoogleStrategyCallback: profile', profile);
 
             User.findOne({ googleId: profile.id}).then(existingUser =>{      
                 if(existingUser){
-                    console.log("Auth done");
-                    done (null, existingUser);
                     console.log('existingUser',existingUser);
+                    done (null, existingUser);
                 }else{
                     new User ({googleId: profile.id})
-                        .save()  
-                        .then(user => done(null, user));
-                        // console.log('user',user,googleId);
+                    .save()  
+                    .then(user => done(null, user));
+                    
                 }
             })
             
         }
     ));
 
-console.log('keys.facebookID:', keys.facebookID);
-console.log('keys.facebookID:', keys.facebookSecret);
+// console.log('keys.facebookID:', keys.facebookID);
+// console.log('keys.facebookID:', keys.facebookSecret);
 // console.log('pfofile.id:', profile.id);
 
 

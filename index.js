@@ -7,13 +7,13 @@ require('./models/User');
 require('./services/passport');
 
 // DB  CONNECTION
-mongoose.connect(keys.mongoURI, {useNewUrlParser: true,  useCreateIndex: true, useUnifiedTopology: true}, console.log('keys.mongo', keys.mongoURI))
+mongoose.connect(keys.mongoURI, {useNewUrlParser: true,  useCreateIndex: true, useUnifiedTopology: true})
 
 // CHECK DB CONNECTION
 const db = mongoose.connection;
 db.on('error', console.error.bind(console, 'connection error:'));
 db.once('open', function() {
-  console.log('connected')
+  console.log('DB_connected')
 });
 
 const app = express();
@@ -24,10 +24,11 @@ app.use(
         keys: [keys.cookieKey]
     })
 );
-    // console.log('keys', keys.cookieKey);\
 
 app.use(passport.initialize());
+console.log('passport.initialize:');
 app.use(passport.session());
+console.log('passport.session');
 
 require('./routes/authRoutes.js')(app);
 
