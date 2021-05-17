@@ -30,20 +30,20 @@ passport.use(
             callbackURL: '/auth/google/callback', 
             proxy: true
         },
-        (accessToken, refreshToken, profile, done) => {
+        async (accessToken, refreshToken, profile, done) => {
             // console.log('GoogleStrategyCallback: profile', profile);
 
-            User.findOne({ googleId: profile.id}).then(existingUser =>{      
-                if(existingUser){
-                    console.log('existingUser',existingUser);
-                    done (null, existingUser);
-                }else{
-                    new User ({googleId: profile.id})
-                    .save()  
-                    .then(user => done(null, user));
-                    
-                }
-            })
+            const existingUser = await User.findOne({ googleId: profile.id});
+            
+            if(existingUser){
+                console.log('existingUser',existingUser);
+                done (null, existingUser);
+            }else{
+                const user = await new User ({googleId: profile.id}).save()  
+                done(null, user);
+                
+            }
+            
             
         }
     ));
@@ -60,21 +60,20 @@ passport.use(new FacebookStrategy({
     callbackURL: "/auth/facebook/callback",
     proxy: true
   },
-    (accessToken, refreshToken, profile, done) => {
-        console.log('profileFB:', profile);
+    async (accessToken, refreshToken, profile, done) => {
+        // console.log('profileFB:', profile);
         // console.log('User:', User) 
 
-        User.findOne({ facebookId: profile.id}).then(existingUser =>{
-            if(existingUser){
-                // console.log('existingUser-nicu', existingUser);
-                done (null, existingUser);
-            }else{
-                console.log('insert user', {facebookId: profile.id});
-                new User ({facebookId: profile.id})
-                    .save()  
-                    .then(user => done(null, user));
-                    // console.log('user',user);
-            }
-        })      
+        const existingUser = await User.findOne({ facebookId: profile.id})
+        if(existingUser){
+            // console.log('existingUser-nicu', existingUser);
+            done (null, existingUser);
+        }else{
+            console.log('insert user', {facebookId: profile.id});
+            const user = await new User ({facebookId: profile.id}).save()  
+            done(null, user);
+            // console.log('user',user);
+        }
+          
     }
 ));
