@@ -41,7 +41,7 @@ module.exports = (app) => {
     //GET CURRENT USER DATA
     app.get('/api/current_user', (req, res) => {
         res.send(req.user);
-        // console.log('req-nicu', req);
+        console.log('req-nicu', req);
         // console.log('res', res);
     })
 };
